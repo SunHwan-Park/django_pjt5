@@ -111,7 +111,7 @@
     likeButtonList.forEach(likeButton => {
       likeButton.addEventListener('click', e => {
         const movieID = e.target.dataset.id
-        {% if user.is_authenticated %}
+        {% if request.user.is_authenticated %}
         axios.get(`/movies/${movieID}/like/`)
           .then(res => {
             if (res.data.liked) {
