@@ -1,5 +1,5 @@
 """
-WSGI config for django_pjt5 project.
+WSGI config for django_pjt4 project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,9 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_pjt5.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_pjt4.settings')
 
 application = get_wsgi_application()
-
-from whitenoise.django import DjangoWhiteNoise
-application = DjangoWhiteNoise(application)
