@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load bootstrap_pagination %}
+
+{% block content %}
+<style>
+  .pagination {
+    justify-content: center;
+  }
+</style>
+<div class="container my-3">
+  <div class="recommend-list d-flex flex-column align-items-center my-5">
+    <h3 class="mb-3">당신이 좋아할만한 영화를 골라봤어요!</h3>
+    /
+    {% for genre in request.user.like_genres.all %}
+      {{ genre.name }} /
+    {% endfor %}
+    <center class="mt-3">
+    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" style="width: 342px">
+      <div class="carousel-inner">
+        {% for movie in movies_recommend %}
+        {% if forloop.first %}
+        <div class="carousel-item active">
+          <a href="{% url 'movies:movie_detail' movie.pk %}"><img class="d-block" alt="{{ movie.title }}" src="https://image.tmdb.org/t/p/w342/{{ movie.poster_path }}"></a>
+        </div>
+        {% else %}
+        <div class="carousel-item">
+          <a href="{% url 'movies:movie_detail' movie.pk %}"><img class="d-block" alt="{{ movie.title }}" src="https://image.tmdb.org/t/p/w342/{{ movie.poster_path }}"></a>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+      <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+    </center>
+  </div>
+  <hr>
+  <div class="movie-list">
+    <h1 class="text-center">Movies</h1>
+    <hr>
+    <div class="btn-group mb-3" role="group">
+      <button id="btnGroupDrop1" type="button" class="btn border-info text-secondary dropdown-toggle mb-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        정렬
+      </button>
+      <form action="{% url 'movies:index' %}" method="POST">
+        <div class="dropdown-menu p-0" aria-labelledby="btnGroupDrop1" style="width:10px">
+           {% csrf_token %}
+          <button class="dropdown-item text-secondary text-center" type="submit" name="rank">평점순</button>
+          <button class="dropdown-item text-secondary text-center" type="submit" name="popularity">인기순</button>
+          <button class="dropdown-item text-secondary text-center" type="submit" name="like">좋아요순</button>
+          <button class="dropdown-item text-secondary text-center" type="submit" name="release_date">최신순</button>
+        </div>
+      </form>
+    </div>
+    <div class="row">
+      {% for movie in page_obj %}
+        <div class="card col-4" style="width: 18rem;">
+          <div class="card-body">
+            <div class="d-flex flex-column align-items-center">
+              <p><a href="{% url 'movies:movie_detail' movie.pk %}">
+                <img class="d-inline" src="https://image.tmdb.org/t/p/w154/{{ movie.poster_path }}" alt="{{ movie.title }}">
+              </a></p>
+              <h5 class="card-title"><a href="{% url 'movies:movie_detail' movie.pk %}">{{ movie.title }}</a></h5>
+              <ul>
+                <li>평점: {{ movie.vote_average }}</li>
+                <li>인기도: {{ movie.popularity|floatformat }}</li>
+                <li>개봉일: {{ movie.release_date }}</li>
+                <li>장르:
+                {% for genre in movie.genres.all %}
+                  {{ genre.name }} /
+                {% endfor %}
+                </li>
+              </ul>
+              <div>
+              {% if user in movie.like_users.all %}
+              <i class="fas fa-heart fa-lg like-buttons" style="color:crimson" data-id="{{ movie.pk }}"></i>
+              {% else %}
+              <i class="fas fa-heart fa-lg like-buttons" style="color:black" data-id="{{ movie.pk }}"></i>
+              {% endif %}
+              <span id="like-count-{{ movie.pk }}">{{ movie.like_users.all|length }}</span>명이 이 글을 좋아합니다.
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+  </div>
+
+
+  {% bootstrap_paginate page_obj range=10 show_prev_next="false" show_first_last="true" %}
+  <div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+    </span>
+  </div>
+
+
+
+<script>
+    const likeButtonList = document.querySelectorAll('.like-buttons')
+    likeButtonList.forEach(likeButton => {
+      likeButton.addEventListener('click', e => {
+        const movieID = e.target.dataset.id
+        {% if user.is_authenticated %}
+        axios.get(`/movies/${movieID}/like/`)
+          .then(res => {
+            if (res.data.liked) {
+              e.target.style.color = 'crimson'
+            } else {
+              e.target.style.color = 'black'
+            }
+            document.querySelector(`#like-count-${movieID}`).innerText = res.data.count
+          })
+        {% else %}
+          alert('비로그인 사용자는 좋아요를 누를 수 없습니다.')
+        {% endif %}
+      })
+    })
+</script>
+{% endblock %}

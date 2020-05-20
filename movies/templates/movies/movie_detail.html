@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block content %}
+<div class="container">
+    <div class="row d-flex flex-column align-items-center">
+        <p class="d-block"><img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" style="width:400px; height:400px;"></p>
+        <h3>제목 : {{ movie.title }}</h3><br>
+        <h3>원제 : {{ movie.original_title }}</h3><br>
+        <h4>개봉일 : {{ movie.release_data }}</h4><br>
+        <h4>투표 인원 : {{ movie.vote_count }}명</h4><br>
+        <h4>평점 : {{ movie.vote_average }}점</h4><br>
+        <p><h3>줄거리</h3><br>
+        {{ movie.overview}}</p>
+    </div>
+</div>
+{% endblock %}

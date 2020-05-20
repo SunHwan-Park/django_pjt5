@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block content %}
+<h1 class="text-center">선호하는 장르를 골라주세요!</h1>
+{% bootstrap_button "추가하기" id='addSelector' button_type="submit" button_class="btn-primary" %}
+<p>
+<form action="" method="POST">
+    {% csrf_token %}
+<div id='sendForm'>
+<select class="select" name="favorite_genre1">
+    {% for genre in genres %}
+    <option value={{ genre.pk }}>{{ genre.name }}</option>
+    {% endfor %}
+</select>
+</div>
+<div>
+    {% bootstrap_button "보내기" button_type="submit" button_class="btn-primary" %}
+</div>
+</form>
+</p>
+<script>
+    let counter = 2
+    const addSelector = document.querySelector('#addSelector')
+    const sendForm = document.querySelector('#sendForm')
+    addSelector.addEventListener('click', function(e) {
+        let selectorForm = document.createElement('select')
+        selectorForm.setAttribute('name', `favorite_genre${counter}`)
+        counter += 1
+        let optionForm = null
+        {% for genre in genres %}
+        optionForm = document.createElement('option')
+        optionForm.setAttribute('value', '{{ genre.pk }}')
+        optionForm.innerText = '{{ genre.name }}'
+        selectorForm.appendChild(optionForm)
+        {% endfor %}
+        sendForm.appendChild(selectorForm)
+    })
+</script>
+{% endblock %}
