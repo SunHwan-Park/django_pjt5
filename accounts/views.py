@@ -63,7 +63,7 @@ def add_genre(request):
         context = {
             'genres' : genres,
         }
-        return render(request, 'accounts/add_genre.html', context)
+        return render(request, 'accounts/genre.html', context)
 
 @login_required
 def delete_genre(request):
@@ -80,4 +80,4 @@ def delete_genre(request):
         context = {
             'genres' : genres,
         }
-        return render(request, 'accounts/delete_genre.html', context)
+        return render(request, 'accounts/genre.html', context)

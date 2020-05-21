@@ -3,7 +3,20 @@
 
 {% block content %}
 <div class="d-flex flex-column align-items-center my-5">
+  {% if request.resolver_match.url_name == "add_genre" %}
   <h1 class="text-center">선호하는 장르를 골라주세요!</h1>
+  {% elif request.resolver_match.url_name == "delete_genre" %}
+  <h1 class="text-center">지우고 싶은 장르를 골라주세요!</h1>
+  {% endif %}
+  {% if request.user.like_genres.first %}
+  <h3>현재 {{ request.user.username }}님이 선호하는 장르</h3>
+  <strong>
+    /
+    {% for genre in request.user.like_genres.all %}
+      {{ genre.name }} /
+    {% endfor %}
+  </strong>
+  {% endif %}
   <div class="d-flex flex-column align-items-center w-25 my-3">
     {% bootstrap_button "장르 선택, 묻고 더블로가!" id='addSelector' button_type="submit" button_class="btn-info" %}
   </div>

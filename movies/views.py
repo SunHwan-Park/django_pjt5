@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
-from django.db.models import F
+# from django.db.models import F
 from .models import Movie, Genre
 # Create your views here.
 
@@ -20,7 +20,6 @@ def index(request):
     paginator = Paginator(movies, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    genres = Genre.objects.all()
 
     if request.user.is_authenticated:
         if not request.user.like_genres.all().count():
