@@ -2,23 +2,29 @@
 {% load bootstrap4 %}
 
 {% block content %}
-<h1 class="text-center">지우고싶은 장르를 골라주세요!</h1>
-{% bootstrap_button "추가하기" id='addSelector' button_type="submit" button_class="btn-primary" %}
-<p>
-<form action="" method="POST">
-    {% csrf_token %}
-<div id='sendForm'>
-<select class="select" name="favorite_genre1">
-    {% for genre in genres %}
-    <option value={{ genre.pk }}>{{ genre.name }}</option>
-    {% endfor %}
-</select>
+<div class="d-flex flex-column align-items-center my-5">
+  <h1 class="text-center">지우고 싶은 장르를 골라주세요!</h1>
+  <div class="d-flex flex-column align-items-center w-25 my-3">
+    {% bootstrap_button "장르 선택, 묻고 더블로가!" id='addSelector' button_type="submit" button_class="btn-info" %}
+  </div>
+  <div>
+    <form action="" method="POST" class="d-flex flex-column align-items-center">
+      {% csrf_token %}
+      <div id='sendForm'>
+        <select class="select ml-1" name="favorite_genre1">
+          {% for genre in genres %}
+            <option value={{ genre.pk }}>{{ genre.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <hr>
+      <div>
+        {% bootstrap_button "저장" button_type="submit" button_class="btn-primary" %}
+      </div>
+    </form>
+  </div>
 </div>
-<div>
-    {% bootstrap_button "보내기" button_type="submit" button_class="btn-primary" %}
-</div>
-</form>
-</p>
+
 <script>
     let counter = 2
     const addSelector = document.querySelector('#addSelector')
@@ -26,6 +32,7 @@
     addSelector.addEventListener('click', function(e) {
         let selectorForm = document.createElement('select')
         selectorForm.setAttribute('name', `favorite_genre${counter}`)
+        selectorForm.classList.add('m-1')
         counter += 1
         let optionForm = null
         {% for genre in genres %}

@@ -9,11 +9,13 @@
 </style>
 <div class="container my-3">
   <div class="recommend-list d-flex flex-column align-items-center my-5">
-    <h3 class="mb-3">당신이 좋아할만한 영화를 골라봤어요!</h3>
+    <h2>당신이 좋아할만한 영화를 골라봤어요!</h2>
+    <strong>
     /
     {% for genre in request.user.like_genres.all %}
       {{ genre.name }} /
     {% endfor %}
+    </strong>
     <center class="mt-3">
     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" style="width: 342px">
       <div class="carousel-inner">
@@ -21,10 +23,12 @@
         {% if forloop.first %}
         <div class="carousel-item active">
           <a href="{% url 'movies:movie_detail' movie.pk %}"><img class="d-block" alt="{{ movie.title }}" src="https://image.tmdb.org/t/p/w342/{{ movie.poster_path }}"></a>
+          <h3><span class="badge badge-primary">{{ movie.vote_average }}</span></h3>
         </div>
         {% else %}
         <div class="carousel-item">
           <a href="{% url 'movies:movie_detail' movie.pk %}"><img class="d-block" alt="{{ movie.title }}" src="https://image.tmdb.org/t/p/w342/{{ movie.poster_path }}"></a>
+          <h3><span class="badge badge-primary">{{ movie.vote_average }}</span></h3>
         </div>
         {% endif %}
         {% endfor %}
@@ -83,28 +87,26 @@
               {% else %}
               <i class="fas fa-heart fa-lg like-buttons" style="color:black" data-id="{{ movie.pk }}"></i>
               {% endif %}
-              <span id="like-count-{{ movie.pk }}">{{ movie.like_users.all|length }}</span>명이 이 글을 좋아합니다.
+              <span id="like-count-{{ movie.pk }}">{{ movie.like_users.all|length }}</span>명이 이 영화를 좋아합니다.
               </div>
             </div>
           </div>
         </div>
       {% endfor %}
-      </div>
     </div>
   </div>
+</div>
 
 
-  {% bootstrap_paginate page_obj range=10 show_prev_next="false" show_first_last="true" %}
-  <div class="pagination">
-    <span class="step-links">
-        {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; first</a>
-            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-        {% endif %}
-    </span>
-  </div>
-
-
+{% bootstrap_paginate page_obj range=10 show_prev_next="false" show_first_last="true" %}
+<div class="pagination">
+  <span class="step-links">
+      {% if page_obj.has_previous %}
+          <a href="?page=1">&laquo; first</a>
+          <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+      {% endif %}
+  </span>
+</div>
 
 <script>
     const likeButtonList = document.querySelectorAll('.like-buttons')

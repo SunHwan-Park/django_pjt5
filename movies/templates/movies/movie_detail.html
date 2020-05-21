@@ -3,14 +3,62 @@
 {% block content %}
 <div class="container">
     <div class="row d-flex flex-column align-items-center">
-        <p class="d-block"><img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" style="width:400px; height:400px;"></p>
-        <h3>제목 : {{ movie.title }}</h3><br>
-        <h3>원제 : {{ movie.original_title }}</h3><br>
-        <h4>개봉일 : {{ movie.release_data }}</h4><br>
-        <h4>투표 인원 : {{ movie.vote_count }}명</h4><br>
-        <h4>평점 : {{ movie.vote_average }}점</h4><br>
-        <p><h3>줄거리</h3><br>
-        {{ movie.overview}}</p>
+        <p class="d-block"><img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" style="width:500px;"></p>
+        <hr>
+        <div>
+          <div class="d-flex justify-content-between">
+            <h3>제목 : {{ movie.title }}</h3>
+            <div>
+              {% if user in movie.like_users.all %}
+              <i class="fas fa-heart fa-lg like-buttons" style="color:crimson" data-id="{{ movie.pk }}"></i>
+              <span>{{ user.username }}님을 비롯한 </span>
+              {% else %}
+              <i class="fas fa-heart fa-lg like-buttons" style="color:black" data-id="{{ movie.pk }}"></i>
+              {% if movie.like_users.first %}
+                <span>{{ movie.like_users.first }}님을 비롯한 </span>
+              {% endif %}
+              {% endif %}
+              <span id="like-count-{{ movie.pk }}">{{ movie.like_users.all|length }}</span>명이 이 영화를 좋아합니다.
+            </div>
+          </div>
+          </p>
+          <hr>
+          <h5>원제 : {{ movie.original_title }}</h5>
+          <h5>개봉일 : {{ movie.release_data }}</h5>
+          <h5>투표 인원 : {{ movie.vote_count }}명</h5>
+          <h5>평점: {{ movie.vote_average }}</h5>
+          <h5>인기도: {{ movie.popularity|floatformat }}</h5>
+          <h5>장르: /
+            {% for genre in movie.genres.all %}
+              {{ genre.name }} /
+            {% endfor %}
+          </h5>
+          <h5>줄거리</h5>
+          <p>{{ movie.overview}}</p>
+        </div>
     </div>
 </div>
+
+<script>
+    const likeButtonList = document.querySelectorAll('.like-buttons')
+    likeButtonList.forEach(likeButton => {
+      likeButton.addEventListener('click', e => {
+        const movieID = e.target.dataset.id
+        {% if user.is_authenticated %}
+        axios.get(`/movies/${movieID}/like/`)
+          .then(res => {
+            if (res.data.liked) {
+              e.target.style.color = 'crimson'
+            } else {
+              e.target.style.color = 'black'
+            }
+            document.querySelector(`#like-count-${movieID}`).innerText = res.data.count
+          })
+        {% else %}
+          alert('비로그인 사용자는 좋아요를 누를 수 없습니다.')
+        {% endif %}
+      })
+    })
+</script>
+
 {% endblock %}
